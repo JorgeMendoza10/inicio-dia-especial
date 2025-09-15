@@ -25,14 +25,10 @@ function startExperience() {
     }, 1500);
     
     setTimeout(() => {
-        showSection('counter');
+        showSection('final');
     }, 2000);
     
-    setTimeout(() => {
-        showSection('final');
-    }, 2500);
-    
-    // Iniciar contador de tiempo
+    // Iniciar contador de tiempo (solo si existe la sección)
     startTimeCounter();
     
     // Crear efecto de corazones flotantes
@@ -144,14 +140,24 @@ function smoothScrollManual(targetPosition) {
 // Función para el contador de tiempo
 function startTimeCounter() {
     function updateCounter() {
+        // Verificar si los elementos del contador existen
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        
+        // Si no existen los elementos, no hacer nada
+        if (!daysElement || !hoursElement || !minutesElement) {
+            return;
+        }
+        
         const now = new Date();
         const timeDiff = now - startDate;
         
         // Si la fecha es futura, mostrar 0
         if (timeDiff < 0) {
-            document.getElementById('days').textContent = '0';
-            document.getElementById('hours').textContent = '0';
-            document.getElementById('minutes').textContent = '0';
+            daysElement.textContent = '0';
+            hoursElement.textContent = '0';
+            minutesElement.textContent = '0';
             return;
         }
         
@@ -159,9 +165,9 @@ function startTimeCounter() {
         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
         
-        document.getElementById('days').textContent = days;
-        document.getElementById('hours').textContent = hours;
-        document.getElementById('minutes').textContent = minutes;
+        daysElement.textContent = days;
+        hoursElement.textContent = hours;
+        minutesElement.textContent = minutes;
     }
     
     updateCounter();
