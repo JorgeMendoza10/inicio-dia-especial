@@ -29,7 +29,7 @@ function startExperience() {
     }, 2000);
     
     // Iniciar contador de tiempo (solo si existe la sección)
-    startTimeCounter();
+    // startTimeCounter(); // Comentado porque no hay sección de contador
     
     // Crear efecto de corazones flotantes
     createFloatingHearts();
