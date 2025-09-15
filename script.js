@@ -868,7 +868,12 @@ function generatePhotoGallery() {
         const img = document.createElement('img');
         img.src = `pictures/${i}.jpeg`;
         img.alt = `Foto especial ${i}`;
-        img.onclick = () => showSpecialMessage();
+        img.addEventListener('click', () => {
+            // Mostrar mensaje especial como antes
+            try { showSpecialMessage(); } catch(e) {}
+            // Abrir la imagen en el visor
+            openLightbox(img.src, img.alt);
+        });
         
         const p = document.createElement('p');
         
@@ -887,6 +892,46 @@ function generatePhotoGallery() {
         photoItem.appendChild(p);
         photoGrid.appendChild(photoItem);
     }
+}
+
+// Lightbox logic
+function openLightbox(src, alt) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImage');
+    const backdrop = document.getElementById('lightboxBackdrop');
+    const closeBtn = document.getElementById('lightboxClose');
+    if (!lightbox || !lightboxImg) return;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightbox.style.display = 'flex';
+    requestAnimationFrame(() => lightbox.classList.add('visible'));
+
+    // Cerrar con click en backdrop o botón
+    const handleBackdrop = (e) => {
+        if (e.target === backdrop) closeLightbox();
+    };
+    backdrop && backdrop.addEventListener('click', handleBackdrop, { once: true });
+    closeBtn && closeBtn.addEventListener('click', closeLightbox, { once: true });
+
+    // Cerrar con ESC
+    const escHandler = (e) => {
+        if (e.key === 'Escape') {
+            closeLightbox();
+            document.removeEventListener('keydown', escHandler);
+        }
+    };
+    document.addEventListener('keydown', escHandler);
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    if (!lightbox) return;
+    lightbox.classList.remove('visible');
+    setTimeout(() => {
+        lightbox.style.display = 'none';
+        const img = document.getElementById('lightboxImage');
+        if (img) img.src = '';
+    }, 200);
 }
 
 // Función para añadir foto personalizada
