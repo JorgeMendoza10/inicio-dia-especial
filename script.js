@@ -1,6 +1,16 @@
 
 // Función para iniciar la experiencia
 function startExperience() {
+    // Reproducir la canción de cumpleaños
+    const birthdaySong = document.getElementById('birthdaySong');
+    if (birthdaySong) {
+        birthdaySong.play().catch(error => {
+            console.log('No se pudo reproducir la canción automáticamente:', error);
+            // Mostrar un mensaje al usuario para que active el audio manualmente
+            showAudioPermissionMessage();
+        });
+    }
+    
     // Ocultar el botón de inicio
     const startBtn = document.querySelector('.start-btn');
     startBtn.style.display = 'none';
@@ -311,6 +321,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Iniciar corazones flotantes inmediatamente
     createFloatingHearts();
     
+    // Añadir controles de audio
+    addAudioControls();
+    
     // Añadir estilos CSS adicionales para animaciones
     const style = document.createElement('style');
     style.textContent = `
@@ -379,6 +392,80 @@ document.addEventListener('DOMContentLoaded', () => {
 function setStartDate(year, month, day) {
     startDate.setFullYear(year, month - 1, day);
     startTimeCounter(); // Reiniciar contador con nueva fecha
+}
+
+// Función para mostrar mensaje de permisos de audio
+function showAudioPermissionMessage() {
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);">
+            <h3 style="margin: 0 0 10px 0;">🎵 ¡Haz clic para activar la música! 🎵</h3>
+            <p style="margin: 0 0 15px 0;">Para una experiencia completa, haz clic en el botón de abajo para reproducir la canción de cumpleaños</p>
+            <button onclick="playBirthdaySong()" style="background: white; color: #ff6b6b; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1rem;">
+                ▶️ Reproducir Música
+            </button>
+        </div>
+    `;
+    notification.style.position = 'fixed';
+    notification.style.top = '50%';
+    notification.style.left = '50%';
+    notification.style.transform = 'translate(-50%, -50%)';
+    notification.style.zIndex = '10000';
+    notification.style.maxWidth = '400px';
+    notification.style.animation = 'slideInRight 0.5s ease';
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remover después de 10 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutRight 0.5s ease forwards';
+            setTimeout(() => {
+                notification.remove();
+            }, 500);
+        }
+    }, 10000);
+}
+
+// Función para reproducir la canción de cumpleaños
+function playBirthdaySong() {
+    const birthdaySong = document.getElementById('birthdaySong');
+    if (birthdaySong) {
+        birthdaySong.play().then(() => {
+            console.log('Canción de cumpleaños reproduciéndose');
+            // Ocultar el mensaje de permisos si existe
+            const audioMessage = document.querySelector('[style*="position: fixed"][style*="top: 50%"]');
+            if (audioMessage) {
+                audioMessage.remove();
+            }
+        }).catch(error => {
+            console.log('Error al reproducir la canción:', error);
+        });
+    }
+}
+
+// Función para pausar la canción
+function pauseBirthdaySong() {
+    const birthdaySong = document.getElementById('birthdaySong');
+    if (birthdaySong) {
+        birthdaySong.pause();
+    }
+}
+
+// Función para añadir controles de audio
+function addAudioControls() {
+    const audioControls = document.createElement('div');
+    audioControls.innerHTML = `
+        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
+            <button onclick="playBirthdaySong()" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);" title="Reproducir música">
+                ▶️
+            </button>
+            <button onclick="pauseBirthdaySong()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);" title="Pausar música">
+                ⏸️
+            </button>
+        </div>
+    `;
+    document.body.appendChild(audioControls);
 }
 
 // Función para añadir foto personalizada
