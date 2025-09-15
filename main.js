@@ -26,10 +26,6 @@ function startExperience() {
         showSection('final');
     }, 2000);
     
-    
-    // Crear efecto de corazones flotantes
-    createFloatingHearts();
-    
     // Añadir efectos de click en las fotos
     addPhotoEffects();
 }
@@ -138,11 +134,18 @@ function smoothScrollManual(targetPosition) {
 function createFloatingHearts() {
     const birthdayElements = ['🎂', '🎉', '🎈', '🎁', '💕', '💖', '💗', '💝', '💘', '💞', '🌟', '✨'];
     
+    // Crear algunos elementos inmediatamente al cargar
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            createBirthdayElement();
+        }, i * 500); // Cada 500ms
+    }
+    
     setInterval(() => {
-        if (Math.random() > 0.7) { // 30% de probabilidad cada 2 segundos
+        if (Math.random() > 0.6) { // 40% de probabilidad cada 1.5 segundos
             createBirthdayElement();
         }
-    }, 2000);
+    }, 1500);
 }
 
 function createBirthdayElement() {
@@ -305,6 +308,9 @@ function customizeMessages() {
 
 // Inicialización cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
+    // Iniciar corazones flotantes inmediatamente
+    createFloatingHearts();
+    
     // Añadir estilos CSS adicionales para animaciones
     const style = document.createElement('style');
     style.textContent = `
