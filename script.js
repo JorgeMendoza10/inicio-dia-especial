@@ -4,10 +4,14 @@ function startExperience() {
     // Reproducir la canción de cumpleaños
     const birthdaySong = document.getElementById('birthdaySong');
     if (birthdaySong) {
+        // Configurar audio para móviles
+        birthdaySong.volume = 0.7; // Volumen moderado
+        birthdaySong.loop = true; // Repetir la canción
+        
         birthdaySong.play().catch(error => {
             console.log('No se pudo reproducir la canción automáticamente:', error);
-            // Mostrar un mensaje al usuario para que active el audio manualmente
-            showAudioPermissionMessage();
+            // Mostrar un mensaje especial para móviles
+            showMobileAudioMessage();
         });
     }
     
@@ -394,16 +398,19 @@ function setStartDate(year, month, day) {
     startTimeCounter(); // Reiniciar contador con nueva fecha
 }
 
-// Función para mostrar mensaje de permisos de audio
-function showAudioPermissionMessage() {
+// Función para mostrar mensaje especial para móviles
+function showMobileAudioMessage() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     const notification = document.createElement('div');
     notification.innerHTML = `
         <div style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);">
-            <h3 style="margin: 0 0 10px 0;">🎵 ¡Haz clic para activar la música! 🎵</h3>
-            <p style="margin: 0 0 15px 0;">Para una experiencia completa, haz clic en el botón de abajo para reproducir la canción de cumpleaños</p>
-            <button onclick="playBirthdaySong()" style="background: white; color: #ff6b6b; border: none; padding: 10px 20px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1rem;">
+            <h3 style="margin: 0 0 10px 0;">🎵 ¡Activa la música para una experiencia completa! 🎵</h3>
+            <p style="margin: 0 0 15px 0;">${isMobile ? 'En dispositivos móviles, necesitas activar la música manualmente. ¡Haz clic en el botón de abajo!' : 'Para una experiencia completa, haz clic en el botón de abajo para reproducir la canción de cumpleaños'}</p>
+            <button onclick="playBirthdaySong()" style="background: white; color: #ff6b6b; border: none; padding: 12px 25px; border-radius: 25px; font-weight: bold; cursor: pointer; font-size: 1.1rem; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
                 ▶️ Reproducir Música
             </button>
+            ${isMobile ? '<p style="margin: 10px 0 0 0; font-size: 0.9rem; opacity: 0.8;">💡 Tip: También puedes usar los controles de abajo</p>' : ''}
         </div>
     `;
     notification.style.position = 'fixed';
@@ -411,12 +418,12 @@ function showAudioPermissionMessage() {
     notification.style.left = '50%';
     notification.style.transform = 'translate(-50%, -50%)';
     notification.style.zIndex = '10000';
-    notification.style.maxWidth = '400px';
+    notification.style.maxWidth = isMobile ? '350px' : '400px';
     notification.style.animation = 'slideInRight 0.5s ease';
     
     document.body.appendChild(notification);
     
-    // Auto-remover después de 10 segundos
+    // Auto-remover después de 15 segundos en móviles
     setTimeout(() => {
         if (notification.parentNode) {
             notification.style.animation = 'slideOutRight 0.5s ease forwards';
@@ -424,7 +431,12 @@ function showAudioPermissionMessage() {
                 notification.remove();
             }, 500);
         }
-    }, 10000);
+    }, isMobile ? 15000 : 10000);
+}
+
+// Función para mostrar mensaje de permisos de audio (versión original)
+function showAudioPermissionMessage() {
+    showMobileAudioMessage(); // Usar la versión mejorada
 }
 
 // Función para reproducir la canción de cumpleaños
@@ -454,15 +466,18 @@ function pauseBirthdaySong() {
 
 // Función para añadir controles de audio
 function addAudioControls() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     const audioControls = document.createElement('div');
     audioControls.innerHTML = `
-        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px;">
-            <button onclick="playBirthdaySong()" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);" title="Reproducir música">
+        <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; display: flex; gap: 10px; flex-direction: ${isMobile ? 'column' : 'row'};">
+            <button onclick="playBirthdaySong()" style="background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; border: none; padding: ${isMobile ? '15px' : '10px'}; border-radius: 50%; cursor: pointer; font-size: ${isMobile ? '1.5rem' : '1.2rem'}; box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); transition: transform 0.2s;" title="Reproducir música" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                 ▶️
             </button>
-            <button onclick="pauseBirthdaySong()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; border: none; padding: 10px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4);" title="Pausar música">
+            <button onclick="pauseBirthdaySong()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); color: white; border: none; padding: ${isMobile ? '15px' : '10px'}; border-radius: 50%; cursor: pointer; font-size: ${isMobile ? '1.5rem' : '1.2rem'}; box-shadow: 0 4px 15px rgba(78, 205, 196, 0.4); transition: transform 0.2s;" title="Pausar música" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                 ⏸️
             </button>
+            ${isMobile ? '<div style="text-align: center; color: white; font-size: 0.8rem; margin-top: 5px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">🎵 Música 🎵</div>' : ''}
         </div>
     `;
     document.body.appendChild(audioControls);
