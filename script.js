@@ -1,5 +1,3 @@
-// Fecha de inicio de la relación (cambia esta fecha por la fecha real)
-const startDate = new Date('2025-07-27'); // 27 de julio de 2025
 
 // Función para iniciar la experiencia
 function startExperience() {
@@ -28,8 +26,6 @@ function startExperience() {
         showSection('final');
     }, 2000);
     
-    // Iniciar contador de tiempo (solo si existe la sección)
-    // startTimeCounter(); // Comentado porque no hay sección de contador
     
     // Crear efecto de corazones flotantes
     createFloatingHearts();
@@ -137,42 +133,6 @@ function smoothScrollManual(targetPosition) {
     requestAnimationFrame(animation);
 }
 
-// Función para el contador de tiempo
-function startTimeCounter() {
-    function updateCounter() {
-        // Verificar si los elementos del contador existen
-        const daysElement = document.getElementById('days');
-        const hoursElement = document.getElementById('hours');
-        const minutesElement = document.getElementById('minutes');
-        
-        // Si no existen los elementos, no hacer nada
-        if (!daysElement || !hoursElement || !minutesElement) {
-            return;
-        }
-        
-        const now = new Date();
-        const timeDiff = now - startDate;
-        
-        // Si la fecha es futura, mostrar 0
-        if (timeDiff < 0) {
-            daysElement.textContent = '0';
-            hoursElement.textContent = '0';
-            minutesElement.textContent = '0';
-            return;
-        }
-        
-        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-        
-        daysElement.textContent = days;
-        hoursElement.textContent = hours;
-        minutesElement.textContent = minutes;
-    }
-    
-    updateCounter();
-    setInterval(updateCounter, 1000); // Actualizar cada segundo
-}
 
 // Función para crear corazones flotantes y elementos de cumpleaños
 function createFloatingHearts() {
