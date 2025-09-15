@@ -19,7 +19,10 @@ function startExperience() {
     const startBtn = document.querySelector('.start-btn');
     startBtn.style.display = 'none';
     
-    // Mostrar las secciones con animación
+    // Reiniciar navegación
+    resetNavigation();
+    
+    // Mostrar la primera sección con animación
     setTimeout(() => {
         showSection('messages');
         // Hacer scroll suave a la primera sección
@@ -28,6 +31,7 @@ function startExperience() {
         }, 200);
     }, 500);
     
+    // Mostrar las demás secciones automáticamente (opcional)
     setTimeout(() => {
         showSection('gallery');
     }, 1000);
@@ -378,6 +382,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 opacity: 0;
             }
         }
+        
+        /* Estilos iniciales para el botón de navegación */
+        .nav-button {
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        /* Estilos para el botón final */
+        .nav-button.final-button {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e, #ff6b6b);
+            background-size: 200% 200%;
+            animation: gradientShift 2s ease infinite;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+        }
+        
+        .nav-button.final-button:hover {
+            background: linear-gradient(45deg, #ff5252, #ff7979, #ff5252);
+            background-size: 200% 200%;
+            animation: gradientShift 1s ease infinite;
+            transform: translateX(-50%) translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.8);
+        }
+        
+        /* Animaciones de confetti */
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes confettiExplode {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y))) scale(0.5) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
     `;
     document.head.appendChild(style);
     
@@ -481,6 +547,182 @@ function addAudioControls() {
         </div>
     `;
     document.body.appendChild(audioControls);
+}
+
+// Variables para navegación entre secciones
+let currentSection = 0;
+const sections = ['messages', 'gallery', 'reasons', 'final'];
+const sectionNames = ['Mensaje', 'Galería', 'Razones', 'Final'];
+
+// Función para navegar a la siguiente sección
+function nextSection() {
+    if (currentSection < sections.length - 1) {
+        currentSection++;
+        showSection(sections[currentSection]);
+        smoothScrollToSection(sections[currentSection]);
+        updateNavigationButton();
+        updateProgressBar();
+    } else {
+        // Si estamos en la última sección, activar confetti y ocultar el botón
+        createConfettiExplosion();
+        setTimeout(() => {
+            hideNavigationButton();
+        }, 2000); // Ocultar después de 2 segundos para que se vea el confetti
+    }
+}
+
+// Función para mostrar el botón de navegación
+function showNavigationButton() {
+    const navButton = document.getElementById('navigationButton');
+    if (navButton) {
+        navButton.style.display = 'block';
+        setTimeout(() => {
+            navButton.style.opacity = '1';
+            navButton.style.transform = 'translateX(-50%) translateY(0)';
+        }, 100);
+    }
+}
+
+// Función para ocultar el botón de navegación
+function hideNavigationButton() {
+    const navButton = document.getElementById('navigationButton');
+    if (navButton) {
+        navButton.style.opacity = '0';
+        navButton.style.transform = 'translateX(-50%) translateY(20px)';
+        setTimeout(() => {
+            navButton.style.display = 'none';
+        }, 300);
+    }
+}
+
+// Función para actualizar el texto del botón de navegación
+function updateNavigationButton() {
+    const navButton = document.getElementById('navigationButton');
+    const navText = navButton.querySelector('.nav-text');
+    const navArrow = navButton.querySelector('.nav-arrow');
+    
+    if (currentSection < sections.length - 1) {
+        navText.textContent = 'Siguiente';
+        navArrow.textContent = '↓';
+    } else {
+        navText.textContent = 'Click';
+        navArrow.textContent = '🎉';
+        // Agregar clase especial para el último botón
+        navButton.classList.add('final-button');
+    }
+}
+
+// Función para actualizar la barra de progreso
+function updateProgressBar() {
+    const progressBar = document.querySelector('.nav-progress-bar');
+    if (progressBar) {
+        const progress = ((currentSection + 1) / sections.length) * 100;
+        progressBar.style.width = progress + '%';
+    }
+}
+
+// Función para reiniciar la navegación
+function resetNavigation() {
+    currentSection = 0;
+    updateNavigationButton();
+    updateProgressBar();
+    showNavigationButton();
+}
+
+// Función para crear explosión de confetti
+function createConfettiExplosion() {
+    const confettiContainer = document.createElement('div');
+    confettiContainer.style.position = 'fixed';
+    confettiContainer.style.top = '0';
+    confettiContainer.style.left = '0';
+    confettiContainer.style.width = '100%';
+    confettiContainer.style.height = '100%';
+    confettiContainer.style.pointerEvents = 'none';
+    confettiContainer.style.zIndex = '10000';
+    confettiContainer.style.overflow = 'hidden';
+    
+    document.body.appendChild(confettiContainer);
+    
+    // Crear múltiples confetti con diferentes colores y formas
+    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
+    const shapes = ['🎉', '🎊', '✨', '🌟', '💫', '⭐', '🎈', '🎁', '💖', '💕', '🎂', '🍰'];
+    
+    // Crear confetti desde múltiples puntos
+    for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+            createConfettiBurst(confettiContainer, colors, shapes);
+        }, i * 200);
+    }
+    
+    // Crear confetti desde el centro
+    setTimeout(() => {
+        createCenterConfetti(confettiContainer, colors, shapes);
+    }, 1000);
+    
+    // Limpiar después de 5 segundos
+    setTimeout(() => {
+        confettiContainer.remove();
+    }, 5000);
+}
+
+// Función para crear ráfaga de confetti desde diferentes puntos
+function createConfettiBurst(container, colors, shapes) {
+    const burstCount = 15;
+    
+    for (let i = 0; i < burstCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+        confetti.style.position = 'absolute';
+        confetti.style.fontSize = '2rem';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '100%';
+        confetti.style.animation = `confettiFall ${2 + Math.random() * 3}s linear forwards`;
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        
+        container.appendChild(confetti);
+        
+        // Remover después de la animación
+        setTimeout(() => {
+            if (confetti.parentNode) {
+                confetti.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Función para crear confetti desde el centro
+function createCenterConfetti(container, colors, shapes) {
+    const centerCount = 30;
+    
+    for (let i = 0; i < centerCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+        confetti.style.position = 'absolute';
+        confetti.style.fontSize = '1.5rem';
+        confetti.style.left = '50%';
+        confetti.style.top = '50%';
+        confetti.style.transform = 'translate(-50%, -50%)';
+        confetti.style.animation = `confettiExplode ${3 + Math.random() * 2}s ease-out forwards`;
+        confetti.style.animationDelay = Math.random() * 0.3 + 's';
+        
+        // Ángulo aleatorio para la explosión
+        const angle = (Math.PI * 2 * i) / centerCount + Math.random() * 0.5;
+        const distance = 200 + Math.random() * 300;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        
+        confetti.style.setProperty('--end-x', endX + 'px');
+        confetti.style.setProperty('--end-y', endY + 'px');
+        
+        container.appendChild(confetti);
+        
+        // Remover después de la animación
+        setTimeout(() => {
+            if (confetti.parentNode) {
+                confetti.remove();
+            }
+        }, 5000);
+    }
 }
 
 // Función para añadir foto personalizada
