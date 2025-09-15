@@ -11,7 +11,9 @@ function startExperience() {
     setTimeout(() => {
         showSection('messages');
         // Hacer scroll suave a la primera sección
-        smoothScrollToSection('messages');
+        setTimeout(() => {
+            smoothScrollToSection('messages');
+        }, 200);
     }, 500);
     
     setTimeout(() => {
@@ -92,11 +94,51 @@ function smoothScrollToSection(sectionType) {
     }
     
     if (section) {
-        section.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        });
+        // Método más compatible con GitHub Pages
+        const elementPosition = section.offsetTop;
+        const offsetPosition = elementPosition - 50; // 50px de margen
+        
+        // Intentar scroll suave primero
+        try {
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+        } catch (e) {
+            // Si falla, usar scroll manual
+            smoothScrollManual(offsetPosition);
+        }
+        
+        // Fallback para navegadores que no soportan smooth scroll
+        if (!('scrollBehavior' in document.documentElement.style)) {
+            smoothScrollManual(offsetPosition);
+        }
     }
+}
+
+// Función de scroll manual como respaldo
+function smoothScrollManual(targetPosition) {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const duration = 800; // 800ms
+    let start = null;
+
+    function animation(currentTime) {
+        if (start === null) start = currentTime;
+        const timeElapsed = currentTime - start;
+        const run = easeInOutQuad(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+        if (timeElapsed < duration) requestAnimationFrame(animation);
+    }
+
+    function easeInOutQuad(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+    }
+
+    requestAnimationFrame(animation);
 }
 
 // Función para el contador de tiempo
