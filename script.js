@@ -406,29 +406,37 @@ document.addEventListener('DOMContentLoaded', () => {
             box-shadow: 0 15px 40px rgba(255, 107, 107, 0.8);
         }
         
-        /* Animaciones de confetti */
+        /* Animaciones de confetti simplificadas para iPhone */
         @keyframes confettiFall {
             0% {
                 transform: translateY(-100vh) rotate(0deg);
                 opacity: 1;
             }
             100% {
-                transform: translateY(100vh) rotate(720deg);
+                transform: translateY(100vh) rotate(360deg);
                 opacity: 0;
             }
         }
         
         @keyframes confettiExplode {
             0% {
-                transform: translate(-50%, -50%) scale(0) rotate(0deg);
+                transform: translate(-50%, -50%) scale(0);
                 opacity: 1;
             }
-            50% {
-                transform: translate(-50%, -50%) scale(1.2) rotate(180deg);
-                opacity: 0.8;
+            100% {
+                transform: translate(-50%, -50%) scale(1) translate(var(--end-x), var(--end-y));
+                opacity: 0;
+            }
+        }
+        
+        /* Animación simple para móviles */
+        @keyframes simpleConfetti {
+            0% {
+                transform: translateY(-50%) scale(1);
+                opacity: 1;
             }
             100% {
-                transform: translate(calc(-50% + var(--end-x)), calc(-50% + var(--end-y))) scale(0.5) rotate(360deg);
+                transform: translateY(50vh) scale(0.5);
                 opacity: 0;
             }
         }
@@ -629,8 +637,10 @@ function resetNavigation() {
     showNavigationButton();
 }
 
-// Función para crear explosión de confetti
+// Función para crear explosión de confetti (compatible con iPhone)
 function createConfettiExplosion() {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'fixed';
     confettiContainer.style.top = '0';
@@ -643,26 +653,136 @@ function createConfettiExplosion() {
     
     document.body.appendChild(confettiContainer);
     
-    // Crear múltiples confetti con diferentes colores y formas
-    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
     const shapes = ['🎉', '🎊', '✨', '🌟', '💫', '⭐', '🎈', '🎁', '💖', '💕', '🎂', '🍰'];
     
+    if (isMobile) {
+        // Versión simplificada para móviles
+        createSimpleConfetti(confettiContainer, shapes);
+    } else {
+        // Versión completa para desktop
+        createFullConfetti(confettiContainer, shapes);
+    }
+    
+    // Limpiar después de 4 segundos
+    setTimeout(() => {
+        confettiContainer.remove();
+    }, 4000);
+}
+
+// Función para crear confetti simple (compatible con iPhone)
+function createSimpleConfetti(container, shapes) {
+    const confettiCount = 15; // Menos confetti para mejor rendimiento en iPhone
+    
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+        confetti.style.position = 'absolute';
+        confetti.style.fontSize = '2.5rem';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '20%';
+        confetti.style.zIndex = '10001';
+        
+        // Usar requestAnimationFrame para mejor compatibilidad con iPhone
+        let startTime = null;
+        const duration = 3000;
+        const startY = 20;
+        const endY = 80;
+        const startX = Math.random() * 100;
+        const endX = startX + (Math.random() - 0.5) * 40;
+        
+        function animateConfetti(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            
+            const currentY = startY + (endY - startY) * progress;
+            const currentX = startX + (endX - startX) * progress;
+            const rotation = progress * 360;
+            const opacity = 1 - progress;
+            
+            confetti.style.left = currentX + '%';
+            confetti.style.top = currentY + '%';
+            confetti.style.transform = `rotate(${rotation}deg)`;
+            confetti.style.opacity = opacity;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateConfetti);
+            } else {
+                if (confetti.parentNode) {
+                    confetti.remove();
+                }
+            }
+        }
+        
+        container.appendChild(confetti);
+        requestAnimationFrame(animateConfetti);
+    }
+    
+    // También crear un efecto de explosión simple
+    setTimeout(() => {
+        createSimpleExplosion(container, shapes);
+    }, 500);
+}
+
+// Función para crear explosión simple
+function createSimpleExplosion(container, shapes) {
+    const explosionCount = 10;
+    
+    for (let i = 0; i < explosionCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+        confetti.style.position = 'absolute';
+        confetti.style.fontSize = '2rem';
+        confetti.style.left = '50%';
+        confetti.style.top = '50%';
+        confetti.style.transform = 'translate(-50%, -50%)';
+        confetti.style.zIndex = '10001';
+        
+        const angle = (Math.PI * 2 * i) / explosionCount;
+        const distance = 100 + Math.random() * 100;
+        const endX = Math.cos(angle) * distance;
+        const endY = Math.sin(angle) * distance;
+        
+        let startTime = null;
+        const duration = 2000;
+        
+        function animateExplosion(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            
+            const currentX = endX * progress;
+            const currentY = endY * progress;
+            const opacity = 1 - progress;
+            
+            confetti.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+            confetti.style.opacity = opacity;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animateExplosion);
+            } else {
+                if (confetti.parentNode) {
+                    confetti.remove();
+                }
+            }
+        }
+        
+        container.appendChild(confetti);
+        requestAnimationFrame(animateExplosion);
+    }
+}
+
+// Función para crear confetti completo (desktop)
+function createFullConfetti(container, shapes) {
     // Crear confetti desde múltiples puntos
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
         setTimeout(() => {
-            createConfettiBurst(confettiContainer, colors, shapes);
-        }, i * 200);
+            createConfettiBurst(container, shapes);
+        }, i * 300);
     }
     
     // Crear confetti desde el centro
     setTimeout(() => {
-        createCenterConfetti(confettiContainer, colors, shapes);
+        createCenterConfetti(container, shapes);
     }, 1000);
-    
-    // Limpiar después de 5 segundos
-    setTimeout(() => {
-        confettiContainer.remove();
-    }, 5000);
 }
 
 // Función para crear ráfaga de confetti desde diferentes puntos
