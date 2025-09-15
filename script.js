@@ -329,6 +329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Iniciar corazones flotantes inmediatamente
     createFloatingHearts();
     
+    // Generar la galería de fotos automáticamente
+    generatePhotoGallery();
+    
     // Añadir controles de audio
     addAudioControls();
     
@@ -842,6 +845,47 @@ function createCenterConfetti(container, colors, shapes) {
                 confetti.remove();
             }
         }, 5000);
+    }
+}
+
+// Función para generar automáticamente las 20 imágenes
+function generatePhotoGallery() {
+    const photoGrid = document.getElementById('photoGrid');
+    if (!photoGrid) return;
+    
+    // Texto "FELIZCUMPLEAÑOS" - 15 letras (sin espacio)
+    const felizCumpleanos = "FELIZCUMPLEAÑOS";
+    const letters = felizCumpleanos.split('');
+    
+    // Emojis para las imágenes restantes (5 espacios)
+    const emojis = ['🎂', '💕', '🎉', '🌟', '✨'];
+    
+    // Generar las 20 imágenes
+    for (let i = 1; i <= 20; i++) {
+        const photoItem = document.createElement('div');
+        photoItem.className = 'photo-item';
+        
+        const img = document.createElement('img');
+        img.src = `pictures/${i}.jpeg`;
+        img.alt = `Foto especial ${i}`;
+        img.onclick = () => showSpecialMessage();
+        
+        const p = document.createElement('p');
+        
+        // Asignar letra o emoji
+        if (i <= 15) {
+            // Las primeras 15 imágenes tienen las letras de "FELIZ CUMPLEAÑOS"
+            p.textContent = letters[i - 1];
+            p.className = 'letter-text';
+        } else {
+            // Las últimas 5 imágenes tienen emojis
+            p.textContent = emojis[i - 16];
+            p.className = 'emoji-text';
+        }
+        
+        photoItem.appendChild(img);
+        photoItem.appendChild(p);
+        photoGrid.appendChild(photoItem);
     }
 }
 

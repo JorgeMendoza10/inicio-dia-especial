@@ -139,20 +139,29 @@ body {
 
 .photo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 15px;
     max-width: 1000px;
     margin: 0 auto;
+    padding: 0 20px;
+    justify-items: center;
 }
 
 .photo-item {
     background: linear-gradient(135deg, #ffe8e8, #fff5f5);
-    border-radius: 15px;
-    padding: 20px;
+    border-radius: 20px;
+    padding: 15px;
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.2);
+    width: 100%;
+    max-width: 180px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 2px solid rgba(255, 107, 107, 0.1);
 }
 
 .photo-item:hover {
@@ -162,11 +171,12 @@ body {
 
 .photo-item img {
     width: 100%;
-    height: 200px;
+    height: 120px;
     object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 15px;
+    border-radius: 15px;
+    margin-bottom: 10px;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .photo-item img:hover {
@@ -178,6 +188,55 @@ body {
     color: #d63384;
     font-weight: 600;
     margin: 0;
+}
+
+/* Estilos especiales para las letras */
+.letter-text {
+    font-size: 2.2rem !important;
+    font-weight: bold !important;
+    color: #d63384 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    font-family: 'Dancing Script', cursive;
+    margin: 0 !important;
+    background: linear-gradient(45deg, #ff6b6b, #d63384);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: letterGlow 2s ease-in-out infinite alternate;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Estilos especiales para los emojis */
+.emoji-text {
+    font-size: 2.5rem !important;
+    margin: 0 !important;
+    animation: emojiBounce 1.5s ease-in-out infinite;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animaciones */
+@keyframes letterGlow {
+    0% {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    100% {
+        text-shadow: 2px 2px 8px rgba(214, 51, 132, 0.3), 0 0 15px rgba(214, 51, 132, 0.2);
+    }
+}
+
+@keyframes emojiBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 /* Reasons Section */
@@ -428,7 +487,81 @@ body {
     }
     
     .photo-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    .photo-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+    }
+    
+    .photo-item {
+        padding: 12px;
+        min-height: 180px;
+    }
+    
+    .photo-item img {
+        height: 100px;
+    }
+    
+    .letter-text {
+        font-size: 1.8rem !important;
+    }
+    
+    .emoji-text {
+        font-size: 2rem !important;
+    }
+}
+
+@media (max-width: 600px) {
+    .photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .photo-item {
+        padding: 10px;
+        min-height: 160px;
+    }
+    
+    .photo-item img {
+        height: 90px;
+    }
+    
+    .letter-text {
+        font-size: 1.6rem !important;
+    }
+    
+    .emoji-text {
+        font-size: 1.8rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    
+    .photo-item {
+        padding: 8px;
+        min-height: 140px;
+    }
+    
+    .photo-item img {
+        height: 80px;
+    }
+    
+    .letter-text {
+        font-size: 1.4rem !important;
+    }
+    
+    .emoji-text {
+        font-size: 1.6rem !important;
     }
 }
 
