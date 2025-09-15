@@ -10,6 +10,8 @@ function startExperience() {
     // Mostrar las secciones con animación
     setTimeout(() => {
         showSection('messages');
+        // Hacer scroll suave a la primera sección
+        smoothScrollToSection('messages');
     }, 500);
     
     setTimeout(() => {
@@ -65,6 +67,35 @@ function showSection(sectionType) {
             section.style.opacity = '1';
             section.style.transform = 'translateY(0)';
         }, 100);
+    }
+}
+
+// Función para hacer scroll suave a una sección
+function smoothScrollToSection(sectionType) {
+    let section;
+    switch(sectionType) {
+        case 'messages':
+            section = document.querySelector('.messages-section');
+            break;
+        case 'gallery':
+            section = document.querySelector('.gallery-section');
+            break;
+        case 'reasons':
+            section = document.querySelector('.reasons-section');
+            break;
+        case 'counter':
+            section = document.querySelector('.counter-section');
+            break;
+        case 'final':
+            section = document.querySelector('.final-message');
+            break;
+    }
+    
+    if (section) {
+        section.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
     }
 }
 
